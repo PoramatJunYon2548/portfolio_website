@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shiinedev - Professional Backend Developer specializing in Node.js, Python, and scalable API development">
+    <meta property="og:title" content="Shiinedev - Backend Developer">
+    <meta property="og:description" content="Building robust & scalable backend systems">
+    <meta property="og:type" content="website">
+    <title>Shiinedev - Backend Developer Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00ff88;
+            --secondary-color: #00cc6e;
+            --accent-color: #0af;
+            --bg-dark: #0a0e27;
+            --bg-darker: #050816;
+            --bg-card: #151030;
+            --text-light: #e4e4e7;
+            --text-gray: #a1a1aa;
+            --border-color: #27272a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-darker);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-darker);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1.5rem;
+            font-family: 'Courier New', monospace;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            z-index: 9998;
+            transition: width 0.1s ease;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--bg-darker);
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 170, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-50px, 50px) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 39, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(10, 14, 39, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+        }
+
+        .logo::before {
+            content: '< ';
+            color: var(--primary-color);
+        }
+
+        .logo::after {
+            content: ' />';
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .nav-links a:not(.btn):hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a:not(.btn)::before,
+        .nav-links a:not(.btn)::after {
+            content: none;
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--primary-color) !important;
+            padding: 0.7rem 1.8rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-color);
+            color: var(--bg-dark) !important;
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .lang-btn {
+            background: transparent;
+            color: var(--text-gray);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .lang-btn.active {
+            background: var(--primary-color);
+            color: var(--bg-dark);
+            border-color: var(--primary-color);
+        }
+
+        .lang-btn:hover:not(.active) {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            animation: fadeInLeft 1s ease;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .glitch {
+            font-size: 1rem;
+            color: var(--text-gray);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-text h1 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-weight: 900;
+        }
+
+        .hero-text h2 {
+            font-size: 2.5rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-text .typed {
+            font-size: 1.5rem;
+            color: var(--text-gray);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 2rem;
+        }
+
+        .typed::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: var(--primary-color);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hero-text p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .primary-btn, .secondary-btn {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .primary-btn {
+            background: var(--primary-color);
+            color: var(--bg-dark);
+            border: none;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .secondary-btn:hover {
+            background: var(--primary-color);
+            color: var(--bg-dark);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            width: 55px;
+            height: 55px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .social-links a:hover::before {
+            left: 0;
+        }
+
+        .social-links a:hover {
+            color: var(--bg-dark);
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .terminal-window {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeInRight 1s ease;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .about-me-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeInRight 1s ease;
+        }
+
+        .about-me-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .about-me-header i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .about-me-header h3 {
+            font-size: 1.8rem;
+            color: var(--text-light);
+            font-family: 'Courier New', monospace;
+        }
+
+        .about-me-content {
+            color: var(--text-gray);
+        }
+
+        .intro-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            color: var(--text-gray);
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .quick-facts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .fact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-gray);
+            font-family: 'Courier New', monospace;
+        }
+
+        .fact-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header .tag {
+            color: var(--primary-color);
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .section-header p {
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 1rem auto 0;
+            font-size: 1.1rem;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .about-card {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .about-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .about-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
+        }
+
+        .about-card i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .about-card p {
+            color: var(--text-gray);
+            line-height: 1.8;
+        }
+
+        .skills {
+            background: var(--bg-dark);
+        }
+
+        .skills-category {
+            margin-bottom: 4rem;
+        }
+
+        .skills-category h3 {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            font-family: 'Courier New', monospace;
+        }
+
+        .skills-category h3::before {
+            content: '// ';
+            color: var(--primary-color);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-item {
+            background: var(--bg-card);
+            padding: 2rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .skill-item i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .skill-item h4 {
+            font-size: 1rem;
+            color: var(--text-light);
+            font-family: 'Courier New', monospace;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 170, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .portfolio-item:hover::before {
+            opacity: 1;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
+        }
+
+        .portfolio-content {
+            padding: 2rem;
+        }
+
+        .portfolio-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .portfolio-content h4 {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .portfolio-content p {
+            color: var(--text-gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-tag {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .project-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .project-link:hover {
+            color: var(--accent-color);
+        }
+
+        .contact {
+            background: var(--bg-dark);
+        }
+
+        .contact-info-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-info-card {
+            background: var(--bg-card);
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-info-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
+        }
+
+        .contact-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info-card h3 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .contact-info-card p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-en {
+            font-family: 'Courier New', monospace;
+            color: var(--primary-color) !important;
+        }
+
+        .contact-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .contact-link:hover {
+            color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: var(--bg-darker);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-social a {
+            color: var(--text-gray);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-content p {
+            color: var(--text-gray);
+            font-family: 'Courier New', monospace;
+        }
+
+        .scroll-top {
+            margin-bottom: 1rem;
+        }
+
+        .scroll-top a {
+            color: var(--primary-color);
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .scroll-top a:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                width: 80%;
+                height: calc(100vh - 70px);
+                background: rgba(10, 14, 39, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 3rem;
+                border-left: 1px solid var(--border-color);
+                transition: right 0.3s ease;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-text h2 {
+                font-size: 1.8rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <div class="loading-text" data-en="initializing..." data-th="กำลังโหลด...">initializing...</div>
+    </div>
+
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <div class="animated-bg"></div>
+
+    <header id="header">
+        <nav class="navbar container">
+            <a href="#" class="logo">Poramet</a>
+            <div class="hamburger" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about" data-en="about()" data-th="เกี่ยวกับ()">about()</a></li>
+                <li><a href="#skills" data-en="skills()" data-th="ทักษะ()">skills()</a></li>
+                <li><a href="#portfolio" data-en="projects()" data-th="ผลงาน()">projects()</a></li>
+                <li><a href="#contact" class="btn" data-en="contact()" data-th="ติดต่อ()">contact()</a></li>
+                <li class="lang-switcher">
+                    <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+                    <button class="lang-btn" onclick="switchLanguage('th')">TH</button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <p class="glitch">$ whoami</p>
+                    <h1>Poramet Junyon</h1>
+                    <h2 data-en="Backend Developer" data-th="นักพัฒนาแบ็คเอนด์">Backend Developer</h2>
+                    <p class="typed" data-en="Building robust & scalable systems" data-th="สร้างระบบที่แข็งแกร่ง & ขยายได้">Building robust & scalable systems</p>
+                    <p data-en="Specialized in server-side development, API design, database architecture, and creating high-performance backend solutions that power modern applications." data-th="เชี่ยวชาญในการพัฒนาฝั่งเซิร์ฟเวอร์ การออกแบบ API สถาปัตยกรรมฐานข้อมูล และสร้างโซลูชันแบ็คเอนด์ประสิทธิภาพสูงที่ขับเคลื่อนแอปพลิเคชันสมัยใหม่">Specialized in server-side development, API design, database architecture, and creating high-performance backend solutions that power modern applications.</p>
+                    
+                    <div class="hero-buttons">
+                        <a href="#portfolio" class="primary-btn">
+                            <i class="fas fa-code"></i>
+                            <span data-en="View Projects" data-th="ดูผลงาน">View Projects</span>
+                        </a>
+                        <a href="#" class="secondary-btn" onclick="downloadResume(event)">
+                            <i class="fas fa-download"></i>
+                            <span data-en="Download CV" data-th="ดาวน์โหลด CV">Download CV</span>
+                        </a>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="https://api.whatsapp.com/send/?phone=252619171882" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="https://www.facebook.com/prmes.th.canthr.yxn" target="_blank" title="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://github.com/PoramatJunYon2548" target="_blank" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="about-me-card">
+                    <div class="about-me-header">
+                        <i class="fas fa-user-circle"></i>
+                        <h3 data-en="About Me" data-th="เกี่ยวกับฉัน">About Me</h3>
+                    </div>
+                    <div class="about-me-content">
+                        <p class="intro-text">
+                            <span data-en="Hi there! I'm " data-th="สวัสดีครับ! ผมชื่อ">Hi there! I'm </span><span class="highlight">Poramet Junyon</span><span data-en=", a Backend Developer who loves building things that work behind the scenes." data-th=" นักพัฒนาแบ็คเอนด์ที่ชอบสร้างสิ่งที่ทำงานเบื้องหลัง">, a Backend Developer who loves building things that work behind the scenes.</span>
+                        </p>
+                        <p class="intro-text" data-en="I'm currently studying Computer Science at Maejo University in Chiang Mai. I enjoy solving problems through code and creating backend systems that are both reliable and efficient. Whether it's building APIs, designing databases, or working with different frameworks, I'm always eager to learn and improve my skills." data-th="ผมกำลังศึกษาสาขาวิทยาการคอมพิวเตอร์ที่มหาวิทยาลัยแม่โจ้ เชียงใหม่ ผมชอบแก้ปัญหาผ่านการเขียนโค้ด และสร้างระบบแบ็คเอนด์ที่ทั้งเชื่อถือได้และมีประสิทธิภาพ ไม่ว่าจะเป็นการสร้าง API การออกแบบฐานข้อมูล หรือการทำงานกับเฟรมเวิร์กต่างๆ ผมมีความกระตือรือร้นที่จะเรียนรู้และพัฒนาทักษะอยู่เสมอ">
+                            I'm currently studying Computer Science at Maejo University in Chiang Mai. I enjoy solving problems through code and creating backend systems that are both reliable and efficient. Whether it's building APIs, designing databases, or working with different frameworks, I'm always eager to learn and improve my skills.
+                        </p>
+                        <p class="intro-text" data-en="When I'm not coding, you'll find me exploring new technologies or working on side projects to challenge myself." data-th="เมื่อไม่ได้เขียนโค้ด คุณจะพบผมกำลังสำรวจเทคโนโลยีใหม่ๆ หรือทำโปรเจกต์ส่วนตัวเพื่อท้าทายตัวเอง">
+                            When I'm not coding, you'll find me exploring new technologies or working on side projects to challenge myself.
+                        </p>
+                        <div class="quick-facts">
+                            <div class="fact-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span data-en="Maejo University" data-th="มหาวิทยาลัยแม่โจ้">Maejo University</span>
+                            </div>
+                            <div class="fact-item">
+                                <i class="fas fa-book"></i>
+                                <span data-en="Computer Science" data-th="วิทยาการคอมพิวเตอร์">Computer Science</span>
+                            </div>
+                            <div class="fact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span data-en="Chiang Mai, Thailand" data-th="เชียงใหม่, ไทย">Chiang Mai, Thailand</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="container">
+            <div class="section-header">
+                <p class="tag">&lt;about&gt;</p>
+                <h2 data-en="What I Do" data-th="สิ่งที่ผมทำ">What I Do</h2>
+                <p data-en="Crafting powerful backend solutions with clean code and modern architecture" data-th="สร้างโซลูชันแบ็คเอนด์ที่ทรงพลังด้วยโค้ดที่สะอาดและสถาปัตยกรรมสมัยใหม่">Crafting powerful backend solutions with clean code and modern architecture</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-card">
+                    <i class="fas fa-server"></i>
+                    <h3 data-en="API Development" data-th="การพัฒนา API">API Development</h3>
+                    <p data-en="Building RESTful and GraphQL APIs with proper authentication, rate limiting, and comprehensive documentation" data-th="สร้าง RESTful และ GraphQL APIs พร้อมระบบยืนยันตัวตน การจำกัดอัตรา และเอกสารที่ครบถ้วน">Building RESTful and GraphQL APIs with proper authentication, rate limiting, and comprehensive documentation</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-database"></i>
+                    <h3 data-en="Database Design" data-th="การออกแบบฐานข้อมูล">Database Design</h3>
+                    <p data-en="Designing efficient database schemas and queries for optimal performance and scalability" data-th="ออกแบบโครงสร้างฐานข้อมูลและคำสั่งที่มีประสิทธิภาพสำหรับประสิทธิภาพและการขยายที่เหมาะสม">Designing efficient database schemas and queries for optimal performance and scalability</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3 data-en="Security & Auth" data-th="ความปลอดภัย & การยืนยันตัวตน">Security & Auth</h3>
+                    <p data-en="Implementing robust security measures, authentication systems, and data protection protocols" data-th="ดำเนินการมาตรการรักษาความปลอดภัยที่แข็งแกร่ง ระบบยืนยันตัวตน และโปรโตคอลปกป้องข้อมูล">Implementing robust security measures, authentication systems, and data protection protocols</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="skills" id="skills">
+        <div class="container">
+            <div class="section-header">
+                <p class="tag">&lt;skills&gt;</p>
+                <h2 data-en="Tech Stack" data-th="เทคโนโลยีที่ใช้">Tech Stack</h2>
+                <p data-en="Technologies I use to build powerful backend systems" data-th="เทคโนโลยีที่ผมใช้สร้างระบบแบ็คเอนด์ที่ทรงพลัง">Technologies I use to build powerful backend systems</p>
+            </div>
+            
+            <div class="skills-category">
+                <h3 data-en="Languages" data-th="ภาษาโปรแกรม">Languages</h3>
+                <div class="skills-grid">
+                    <div class="skill-item"><i class="fab fa-js"></i><h4>JavaScript</h4></div>
+                    <div class="skill-item"><i class="fab fa-js"></i><h4>TypeScript</h4></div>
+                    <div class="skill-item"><i class="fab fa-python"></i><h4>Python</h4></div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3 data-en="Backend Frameworks" data-th="เฟรมเวิร์กแบ็คเอนด์">Backend Frameworks</h3>
+                <div class="skills-grid">
+                    <div class="skill-item"><i class="fab fa-node-js"></i><h4>Node.js + Express</h4></div>
+                    <div class="skill-item"><i class="fab fa-python"></i><h4>Django</h4></div>
+                    <div class="skill-item"><i class="fas fa-bolt"></i><h4>FastAPI</h4></div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3 data-en="Databases" data-th="ฐานข้อมูล">Databases</h3>
+                <div class="skills-grid">
+                    <div class="skill-item"><i class="fas fa-database"></i><h4>MongoDB</h4></div>
+                    <div class="skill-item"><i class="fas fa-database"></i><h4>PostgreSQL</h4></div>
+                    <div class="skill-item"><i class="fas fa-database"></i><h4>MySQL</h4></div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3 data-en="DevOps & Cloud" data-th="DevOps & คลาวด์">DevOps & Cloud</h3>
+                <div class="skills-grid">
+                    <div class="skill-item"><i class="fab fa-docker"></i><h4>Docker</h4></div>
+                    <div class="skill-item"><i class="fas fa-fire"></i><h4>Firebase</h4></div>
+                    <div class="skill-item"><i class="fab fa-aws"></i><h4>AWS</h4></div>
+                    <div class="skill-item"><i class="fas fa-code-branch"></i><h4>CI/CD</h4></div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3 data-en="Tools & Version Control" data-th="เครื่องมือ & Version Control">Tools & Version Control</h3>
+                <div class="skills-grid">
+                    <div class="skill-item"><i class="fab fa-git-alt"></i><h4>Git</h4></div>
+                    <div class="skill-item"><i class="fab fa-github"></i><h4>GitHub</h4></div>
+                    <div class="skill-item"><i class="fab fa-gitlab"></i><h4>GitLab</h4></div>
+                    <div class="skill-item"><i class="fas fa-terminal"></i><h4>VS Code</h4></div>
+                    <div class="skill-item"><i class="fas fa-bug"></i><h4>Postman</h4></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="portfolio" id="portfolio">
+        <div class="container">
+            <div class="section-header">
+                <p class="tag">&lt;projects&gt;</p>
+                <h2 data-en="Featured Work" data-th="ผลงานที่โดดเด่น">Featured Work</h2>
+                <p data-en="Backend systems and APIs I've built" data-th="ระบบแบ็คเอนด์และ APIs ที่ผมสร้าง">Backend systems and APIs I've built</p>
+            </div>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <i class="fas fa-cube portfolio-icon"></i>
+                        <h4>Sontana Webblock</h4>
+                        <p data-en="Interactive web-based block building platform with real-time collaboration and Firebase backend integration." data-th="แพลตฟอร์มสร้างบล็อกบนเว็บแบบอินเทอร์แอคทีฟพร้อมการทำงานร่วมกันแบบเรียลไทม์และการผสานรวม Firebase แบ็คเอนด์">Interactive web-based block building platform with real-time collaboration and Firebase backend integration.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Laravel</span>
+                            <span class="tech-tag">Firebase</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/PoramatJunYon2548" target="_blank"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i> Demo</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <i class="fas fa-chart-line portfolio-icon"></i>
+                        <h4 data-en="Stock Price Tracker" data-th="เว็บดูราคาหุ้น">Stock Price Tracker</h4>
+                        <p data-en="Real-time stock market tracking web application with live price updates, market analysis, and interactive charts for monitoring stock performance." data-th="เว็บแอปพลิเคชันติดตามตลาดหุ้นแบบเรียลไทม์พร้อมอัปเดตราคาสด การวิเคราะห์ตลาด และกราฟแบบอินเทอร์แอคทีฟสำหรับติดตามประสิทธิภาพหุ้น">Real-time stock market tracking web application with live price updates, market analysis, and interactive charts for monitoring stock performance.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Express</span>
+                            <span class="tech-tag">PostgreSQL</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/PoramatJunYon2548" target="_blank"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i> Demo</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <i class="fas fa-campground portfolio-icon"></i>
+                        <h4>Comcamp24</h4>
+                        <p data-en="Full-stack web application for computer camp registration system with user management and event tracking." data-th="แอปพลิเคชันเว็บแบบ Full-stack สำหรับระบบลงทะเบียนค่ายคอมพิวเตอร์พร้อมการจัดการผู้ใช้และติดตามกิจกรรม">Full-stack web application for computer camp registration system with user management and event tracking.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Express</span>
+                            <span class="tech-tag">MongoDB</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/PoramatJunYon2548" target="_blank"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i> Demo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <p class="tag">&lt;contact&gt;</p>
+                <h2 data-en="Get In Touch" data-th="ติดต่อเรา">Get In Touch</h2>
+                <p data-en="Feel free to reach out for collaborations or just a friendly hello" data-th="ติดต่อสำหรับการทำงานร่วมกันหรือแค่ทักทายเป็นมิตร">Feel free to reach out for collaborations or just a friendly hello</p>
+            </div>
+            <div class="contact-info-wrapper">
+                <div class="contact-info-card">
+                    <i class="fas fa-user contact-icon"></i>
+                    <h3 data-en="Name" data-th="ชื่อ">Name</h3>
+                    <p>นาย ปรเมษฐ์ จันทร์ย้อน</p>
+                    <p class="contact-en">Poramet Junyon</p>
+                </div>
+                <div class="contact-info-card">
+                    <i class="fas fa-envelope contact-icon"></i>
+                    <h3 data-en="Email" data-th="อีเมล">Email</h3>
+                    <a href="mailto:PoramatJunyon2548@gmail.com" class="contact-link">PoramatJunyon2548@gmail.com</a>
+                </div>
+                <div class="contact-info-card">
+                    <i class="fas fa-phone contact-icon"></i>
+                    <h3 data-en="Phone" data-th="โทรศัพท์">Phone</h3>
+                    <a href="tel:0997684063" class="contact-link">099-768-4063</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="scroll-top">
+                    <a href="#"><i class="fas fa-chevron-up"></i></a>
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/prmes.th.canthr.yxn" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://github.com/PoramatJunYon2548" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://api.whatsapp.com/send/?phone=252619171882" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <p data-en="© 2024 Poramet Junyon. All rights reserved." data-th="© 2024 ปรเมษฐ์ จันทร์ย้อน สงวนลิขสิทธิ์">© 2024 Poramet Junyon. All rights reserved.</p>
+                <p data-en="// Built with Node.js ❤️" data-th="// สร้างด้วย Node.js ❤️">// Built with Node.js ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Language System
+        let currentLang = 'en';
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            
+            // Update button states
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-en]').forEach(element => {
+                const translation = element.getAttribute('data-' + lang);
+                if (translation) {
+                    // Check if element is input or has specific handling
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translation;
+                    } else {
+                        element.textContent = translation;
+                    }
+                }
+            });
+
+            // Save language preference
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        // Load saved language preference
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferred-language');
+            if (savedLang && savedLang !== 'en') {
+                const langBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${savedLang}')"]`);
+                if (langBtn) {
+                    langBtn.click();
+                }
+            }
+        });
+
+        // Loading Screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1500);
+        });
+
+        // Scroll Progress
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scrollProgress').style.width = scrolled + '%';
+        });
+
+        // Toggle Mobile Menu
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Download Resume
+        function downloadResume(e) {
+            e.preventDefault();
+            const message = currentLang === 'en' 
+                ? '📄 CV Download Feature\n\nReplace this alert with your actual CV file:\n\nwindow.location.href = "your-cv.pdf";'
+                : '📄 ฟีเจอร์ดาวน์โหลด CV\n\nแทนที่การแจ้งเตือนนี้ด้วยไฟล์ CV จริงของคุณ:\n\nwindow.location.href = "your-cv.pdf";';
+            alert(message);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.about-card, .skill-item, .portfolio-item, .contact-info-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
