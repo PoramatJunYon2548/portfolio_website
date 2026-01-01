@@ -1054,6 +1054,16 @@
                     <div class="skill-item"><i class="fab fa-node-js"></i><h4>Node.js + Express</h4></div>
                     <div class="skill-item"><i class="fab fa-python"></i><h4>Django</h4></div>
                     <div class="skill-item"><i class="fas fa-bolt"></i><h4>FastAPI</h4></div>
+                    <div class="skill-item"><i class="fab fa-laravel"></i><h4>Laravel</h4></div>
+                </div>
+            </div>
+
+            <div class="skills-category">
+                <h3 data-en="Frontend Frameworks" data-th="เฟรมเวิร์กฟรอนต์เอนด์">Frontend Frameworks</h3>
+                <div class="skills-grid">
+                    <div class="skill-item"><i class="fab fa-react"></i><h4>React</h4></div>
+                    <div class="skill-item"><i class="fab fa-vuejs"></i><h4>Vue.js</h4></div>
+                    <div class="skill-item"><i class="fab fa-angular"></i><h4>Angular</h4></div>
                 </div>
             </div>
 
@@ -1108,8 +1118,8 @@
                             <span class="tech-tag">Firebase</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/PoramatJunYon2548/Sontana" target="_blank"><i class="fab fa-github"></i> Code</a>
-                            <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="https://github.com/PoramatJunYon2548/Sontana" target="_blank" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i> Demo</a>
                         </div>
                     </div>
                 </div>
@@ -1125,8 +1135,8 @@
                             <span class="tech-tag">PostgreSQL</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/PoramatJunYon2548/Stock-Web-Backend" target="_blank"><i class="fab fa-github"></i> Code</a>
-                            <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="https://github.com/PoramatJunYon2548/Stock-Web-Backend" target="_blank" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i> Demo</a>
                         </div>
                     </div>
                 </div>
@@ -1142,8 +1152,8 @@
                             <span class="tech-tag">MongoDB</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/PoramatJunYon2548" target="_blank"><i class="fab fa-github"></i> Code</a>
-                            <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="https://github.com/PoramatJunYon2548" target="_blank" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i> Demo</a>
                         </div>
                     </div>
                 </div>
@@ -1223,17 +1233,25 @@
             });
 
             // Save language preference
-            localStorage.setItem('preferred-language', lang);
+            try {
+                localStorage.setItem('preferred-language', lang);
+            } catch (e) {
+                console.log('localStorage not available');
+            }
         }
 
         // Load saved language preference
         window.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('preferred-language');
-            if (savedLang && savedLang !== 'en') {
-                const langBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${savedLang}')"]`);
-                if (langBtn) {
-                    langBtn.click();
+            try {
+                const savedLang = localStorage.getItem('preferred-language');
+                if (savedLang && savedLang !== 'en') {
+                    const langBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${savedLang}')"]`);
+                    if (langBtn) {
+                        langBtn.click();
+                    }
                 }
+            } catch (e) {
+                console.log('localStorage not available');
             }
         });
 
@@ -1292,10 +1310,12 @@
         // Download Resume
         function downloadResume(e) {
             e.preventDefault();
-            const message = currentLang === 'en' 
-                ? '📄 CV Download Feature\n\nReplace this alert with your actual CV file:\n\nwindow.location.href = "your-cv.pdf";'
-                : '📄 ฟีเจอร์ดาวน์โหลด CV\n\nแทนที่การแจ้งเตือนนี้ด้วยไฟล์ CV จริงของคุณ:\n\nwindow.location.href = "your-cv.pdf";';
-            alert(message);
+            
+            // ลิงก์ Google Drive สำหรับ CV
+            const cvLink = 'https://drive.google.com/file/d/1csYM2rsntEKZ2ZwXLyh7dWhfzFjcnzPa/view?usp=drive_link';
+            
+            // เปิดลิงก์ในแท็บใหม่
+            window.open(cvLink, '_blank');
         }
 
         // Intersection Observer for animations
